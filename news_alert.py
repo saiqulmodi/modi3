@@ -9,6 +9,13 @@ doesn't re-alert on the same item. Dedup is by both link/id AND normalized
 title, since some sources (Google News in particular) can return a
 different link for the same story on each fetch, which would otherwise
 slip past link-only dedup and repeat the same alert.
+
+State is stored as an ordered dict (insertion order = chronological order),
+not a set -- a plain set has no defined iteration order, so trimming it
+down to the size cap could randomly drop recently-seen items instead of
+the oldest ones, letting something slip back out of "seen" and get
+re-alerted. Running 24/7 now instead of just market hours, the state fills
+up ~4x faster, so this actually matters.
 """
 
 import hashlib
@@ -30,18 +37,21 @@ from matcher import find_matches
 from send_telegram import send_telegram_message
 
 STATE_FILE = "news_alerted_state.json"
-MAX_STATE_IDS = 6000  # now 2 keys (id + title) per item, so double the old cap
+MAX_STATE_IDS = 20000  # running 24/7 now (~4x more runs/day), sized up accordingly
 
 
 def load_state():
+    """Returns an insertion-ordered dict (key -> True) of already-seen keys."""
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, "r") as f:
-            return set(json.load(f))
-    return set()
+            return dict.fromkeys(json.load(f), True)
+    return {}
 
 
 def save_state(alerted_ids):
-    trimmed = list(alerted_ids)[-MAX_STATE_IDS:]
+    # Keeps the MOST RECENTLY inserted keys, since dicts preserve insertion
+    # order -- unlike a set, this reliably trims the oldest entries first.
+    trimmed = list(alerted_ids.keys())[-MAX_STATE_IDS:]
     with open(STATE_FILE, "w") as f:
         json.dump(trimmed, f)
 
@@ -70,8 +80,8 @@ def run():
 
         matches = find_matches(item["text"])
         if matches:
-            alerted_ids.add(item_id)
-            alerted_ids.add(t_key)
+            alerted_ids[item_id] = True
+            alerted_ids[t_key] = True
             match_str = ", ".join(sorted(set(matches)))
             new_alerts.append(
                 f"\U0001F4F0 <b>{item['source']}</b>\n{item['title']}\n"
@@ -79,8 +89,8 @@ def run():
             )
         else:
             # Still record it as seen so a later run doesn't re-check it forever.
-            alerted_ids.add(item_id)
-            alerted_ids.add(t_key)
+            alerted_ids[item_id] = True
+            alerted_ids[t_key] = True
 
     if new_alerts:
         # Telegram hard-caps messages at 4096 chars; chunk by actual length

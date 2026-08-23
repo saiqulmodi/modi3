@@ -1,0 +1,4 @@
+send_telegram.py
+__pycache__/
+*.log
+news_alerted_state.json

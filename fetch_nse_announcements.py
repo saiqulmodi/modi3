@@ -5,6 +5,7 @@ submitted to SEBI/exchange" part of the brief.
 """
 
 import requests
+from datetime import date
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
@@ -14,8 +15,21 @@ HEADERS = {
 
 
 def fetch_nse_announcements():
-    """Returns a list of dicts: {id, title, text, link, source, published}."""
-    url = "https://www.nseindia.com/api/corporate-announcements?index=equities"
+    """Returns a list of dicts: {id, title, text, link, source, published}.
+
+    Without an explicit from_date/to_date, NSE's endpoint only returns the
+    ~20 most recent announcements platform-wide (a rolling window) --
+    verified directly: on a normal trading day that's a tiny fraction of
+    the day's actual filings, easily pushed off the list between 15-minute
+    fetches during busy filing periods. Passing today's date explicitly
+    returns the FULL day's announcements instead (191 items vs. 20 in the
+    same check).
+    """
+    today = date.today().strftime("%d-%m-%Y")
+    url = (
+        "https://www.nseindia.com/api/corporate-announcements?index=equities"
+        f"&from_date={today}&to_date={today}"
+    )
     try:
         response = requests.get(url, headers=HEADERS, timeout=15)
         data = response.json()

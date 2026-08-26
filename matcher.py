@@ -5,7 +5,7 @@ keyword.
 """
 
 import re
-from config import WATCHLIST_SYMBOLS, SYMBOL_TO_NAME, MACRO_KEYWORDS
+from config import WATCHLIST_SYMBOLS, SYMBOL_TO_NAME, MACRO_KEYWORDS, ANNOUNCEMENT_CATEGORY_KEYWORDS
 
 
 def find_matches(text):
@@ -22,6 +22,12 @@ def find_matches(text):
 
     for keyword in MACRO_KEYWORDS:
         if re.search(rf"\b{re.escape(keyword.lower())}\b", text.lower()):
+            matches.append(keyword)
+
+    # Company-agnostic: order wins/results announcements matter regardless
+    # of whether the company is on the 428-stock watchlist.
+    for keyword in ANNOUNCEMENT_CATEGORY_KEYWORDS:
+        if keyword.lower() in text.lower():
             matches.append(keyword)
 
     return matches

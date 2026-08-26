@@ -41,6 +41,16 @@ MACRO_KEYWORDS = [
     "gold price", "silver price", "natural gas", "copper", "commodity prices",
 ]
 
+# Corporate-announcement categories worth alerting on for ANY company, not
+# just the 428-stock watchlist -- order wins and results updates are broad
+# market interest, and NSE's corporate-announcements feed covers ~2000+
+# listed companies, most of which aren't on WATCHLIST_SYMBOLS at all.
+ANNOUNCEMENT_CATEGORY_KEYWORDS = [
+    "financial results", "award of order", "receipt of order",
+    "bags order", "wins order", "l1 bidder", "lowest bidder",
+    "order worth", "contract win", "order from",
+]
+
 WATCHLIST_SYMBOLS = set(INTRADAY_SYMBOLS)
 
 

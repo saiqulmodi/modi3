@@ -84,7 +84,7 @@ def run():
             alerted_ids[t_key] = True
             match_str = ", ".join(sorted(set(matches)))
             new_alerts.append(
-                f"\U0001F4F0 <b>{item['source']}</b>\n{item['title']}\n"
+                f"[MODI3] \U0001F4F0 <b>{item['source']}</b>\n{item['title']}\n"
                 f"Matched: {match_str}\n{item['link']}"
             )
         else:

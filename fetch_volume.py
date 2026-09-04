@@ -46,7 +46,10 @@ def fetch_volumes_yfinance(symbols):
 
         for symbol, ticker in zip(chunk, tickers):
             try:
-                vol = (data["Volume"] if len(tickers) == 1 else data[ticker]["Volume"]).dropna()
+                # group_by="ticker" always puts the ticker as the top MultiIndex
+                # level, even for a single-ticker request -- there's no flat-
+                # columns case to special-case here.
+                vol = data[ticker]["Volume"].dropna()
                 if len(vol) < 2:
                     continue
                 current_volume = float(vol.iloc[-1])

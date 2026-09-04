@@ -64,8 +64,11 @@ python volume_alert.py
 ```
 
 Or register `run_news_alert.bat` / `run_volume_alert.bat` as Windows Task
-Scheduler jobs (the project's own convention runs both every 15 minutes
-during market hours). Already-alerted items/symbols are tracked in
+Scheduler jobs: `MODI3_NewsAlert` runs every 15 minutes 24/7 (news/filings
+can land any time), `MODI3_VolumeAlert` runs every 15 minutes only during
+NSE market hours, 9:15 AM-3:45 PM, Monday-Friday (volume data outside
+trading hours/days is stale anyway). Already-alerted items/symbols are
+tracked in
 `news_alerted_state.json` and `volume_alerted_state.json` respectively
 (both gitignored, regenerate locally) so reruns don't resend the same
 alert — the volume state resets each calendar day so a symbol can alert

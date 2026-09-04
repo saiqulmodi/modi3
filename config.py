@@ -1,6 +1,13 @@
 """
 Shared configuration for MODI3: sources, keywords, and the watchlist used to
 decide which news/filings/regulatory items are actually alert-worthy.
+
+MODI3 is scoped to INDIAN LOCAL coverage only (Indian financial press,
+NSE corporate announcements, SEBI releases) -- global markets/Fed/
+geopolitical/commodities coverage is MODI7's job exclusively (its
+RSS_FEEDS carries the global sources this file used to also carry, which
+was causing the same global story -- e.g. a Fed-rate Google News item --
+to get alerted separately by both projects).
 """
 
 import pandas as pd
@@ -9,18 +16,6 @@ from intraday_watchlist import INTRADAY_SYMBOLS
 RSS_FEEDS = {
     "Economic Times Markets": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
     "Business Standard Markets": "https://www.business-standard.com/rss/markets-106.rss",
-    "CNBC World Markets": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
-    "CNBC Top News": "https://www.cnbc.com/id/10001147/device/rss/rss.html",
-    "Bloomberg Markets": "https://www.bloomberg.com/feeds/markets/news.rss",
-    "Google News (global markets/Fed/geopolitical)": (
-        "https://news.google.com/rss/search?q=global+markets+OR+federal+reserve"
-        "+OR+geopolitical+when:1d&hl=en-US&gl=US&ceid=US:en"
-    ),
-    "Investing.com Commodities": "https://www.investing.com/rss/commodities.rss",
-    "Google News (commodities)": (
-        "https://news.google.com/rss/search?q=crude+oil+OR+gold+price+OR+silver+price"
-        "+OR+commodities+when:1d&hl=en-US&gl=US&ceid=US:en"
-    ),
 }
 
 NSE_ANNOUNCEMENTS_URL = "https://www.nseindia.com/api/corporate-announcements?index=equities"

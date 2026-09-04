@@ -173,3 +173,32 @@ ANGEL_ONLY_SYMBOLS = {
     "DLINKINDIA": "-EQ",
     "KAPSTON": "-EQ",
 }
+
+# NIFTY 50 + NIFTY Financial Services constituents (official NSE index
+# lists, cross-checked 2026-09-04 -- both indices rebalance semi-annually
+# in March/September, so this is worth a periodic spot-check, same as the
+# other "official index" comments above). Used by volume_alert.py to apply
+# the lower 1.5x-of-50-day-avg-volume threshold to these symbols instead of
+# the 2x threshold used for everything else on INTRADAY_SYMBOLS -- this is
+# a plain union of both indices' current members, NOT the same as the
+# NIFTY-50-related comment block further up this file (that block is only
+# the residual of NIFTY 50 + NIFTY Financial Services names that weren't
+# already present elsewhere in INTRADAY_SYMBOLS, e.g. RELIANCE/SBIN/
+# ICICIBANK/MARUTI are NIFTY 50 members but live in the general list above).
+NIFTY_SYMBOLS = {
+    # NIFTY 50
+    "ADANIENT", "ADANIPORTS", "APOLLOHOSP", "ASIANPAINT", "AXISBANK",
+    "BAJAJ-AUTO", "BAJFINANCE", "BAJAJFINSV", "BEL", "BHARTIARTL",
+    "CIPLA", "COALINDIA", "DRREDDY", "EICHERMOT", "ETERNAL", "GRASIM",
+    "HCLTECH", "HDFCBANK", "HDFCLIFE", "HINDALCO", "HINDUNILVR",
+    "ICICIBANK", "INDIGO", "INFY", "ITC", "JIOFIN", "JSWSTEEL",
+    "KOTAKBANK", "LT", "M&M", "MARUTI", "MAXHEALTH", "NESTLEIND", "NTPC",
+    "ONGC", "POWERGRID", "RELIANCE", "SBILIFE", "SHRIRAMFIN", "SBIN",
+    "SUNPHARMA", "TCS", "TATACONSUM", "TMPV", "TATASTEEL", "TECHM",
+    "TITAN", "TRENT", "ULTRACEMCO", "WIPRO",
+    # NIFTY Financial Services (mostly overlaps NIFTY 50 above; the
+    # non-overlapping ones are CHOLAFIN, BSE, MUTHOOTFIN, PFC, RECLTD,
+    # ICICIGI, SBICARD, MFSL, LICHSGFIN).
+    "CHOLAFIN", "BSE", "MUTHOOTFIN", "PFC", "RECLTD", "ICICIGI",
+    "SBICARD", "MFSL", "LICHSGFIN",
+}

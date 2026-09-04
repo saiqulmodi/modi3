@@ -22,9 +22,10 @@ NSE_ANNOUNCEMENTS_URL = "https://www.nseindia.com/api/corporate-announcements?in
 SEBI_PRESS_RELEASES_URL = "https://www.sebi.gov.in/sebiweb/home/HomeAction.do?doListing=yes&sid=1&ssid=7&smid=0"
 
 # Macro/regulatory terms worth alerting on regardless of company mentioned.
-# Includes both India-specific and global market-moving terms, since the
-# global feeds (CNBC/Bloomberg/Google News) rarely mention Indian tickers
-# directly -- their relevance comes through these keywords instead.
+# Includes both India-specific terms and globally-framed ones (federal
+# reserve, geopolitical, etc.) that still matter when they show up in
+# India-focused reporting's own coverage of a global event -- MODI7 carries
+# the raw global-wire version of the same story separately.
 MACRO_KEYWORDS = [
     "RBI", "repo rate", "SEBI circular", "SEBI order", "GDP", "inflation",
     "CPI", "WPI", "GST", "union budget", "monetary policy", "interest rate",
@@ -44,6 +45,52 @@ ANNOUNCEMENT_CATEGORY_KEYWORDS = [
     "financial results", "award of order", "receipt of order",
     "bags order", "wins order", "l1 bidder", "lowest bidder",
     "order worth", "contract win", "order from",
+]
+
+# Terms that make an item worth flagging as a potential governance/legal/
+# financial-distress red flag. Substring-matched (word-boundary) case-
+# insensitively against title+text, same as ANNOUNCEMENT_CATEGORY_KEYWORDS.
+# This is a keyword net, not a verified classifier -- a match means "worth
+# a human look," not "confirmed problem." Ported from MODI7 (2026-09-04):
+# this only ever meaningfully fires against NSE/SEBI corporate filings, and
+# MODI3 is where that coverage lives now that MODI7 is global-only.
+RED_FLAG_KEYWORDS = [
+    "resignation of director", "director resigns", "auditor resign",
+    "resignation of auditor", "forensic audit", "sebi bars", "sebi bans",
+    "show cause notice",
+    # Bare "insider trading" false-positives on the boilerplate "Trading
+    # Window closure pursuant to SEBI (Prohibition of Insider Trading)
+    # Regulations" filing every company makes routinely -- these more
+    # specific phrases only match an actual reported violation/action.
+    "insider trading violation", "insider trading case", "insider trading probe",
+    "penalty for insider trading", "charged with insider trading",
+    "cbi raid", "ed raid",
+    "enforcement directorate", "income tax raid", "search and seizure",
+    "insolvency", "ibc proceedings", "npa", "default on", "debt restructuring",
+    "one time settlement", "winding up", "liquidation", "fraud",
+    "misappropriation", "pledge of shares", "invocation of pledge",
+    "promoter selling", "promoter sold", "promoter stake sale", "bulk deal",
+    "block deal", "credit rating downgrade", "rating downgraded", "litigation",
+    "court case", "lawsuit filed", "class action", "penalty imposed",
+    "fine imposed", "regulatory action", "qualified opinion", "going concern",
+    "rating watch negative", "outlook revised to negative",
+    # Promoter-specific legal exposure -- distinct from the generic
+    # litigation/court-case terms above, which can be about the company
+    # itself (a customer/vendor dispute) rather than the promoters personally.
+    "promoter arrested", "fir against promoter", "chargesheet against promoter",
+    "cbi case against promoter", "ed summons promoter", "sebi debars promoter",
+    "sebi bars promoter", "case against promoter",
+    # Institutional exits -- the selling-side counterpart to the MF/FII
+    # buying terms in ANNOUNCEMENT_CATEGORY_KEYWORDS.
+    "mutual fund sells", "mutual fund reduces stake", "mf sells",
+    "mf reduces stake", "fii sells stake", "dii sells stake",
+    "institutional investor exits",
+    # Governance/dilution red flags.
+    "related party transaction", "voluntary delisting", "delisting of shares",
+    # Divestment/disposal -- the selling-side counterpart to the property/
+    # land/business acquisition terms in ANNOUNCEMENT_CATEGORY_KEYWORDS.
+    "sells land", "disposal of property", "divests property", "divests stake in",
+    "sale of business", "sells subsidiary",
 ]
 
 WATCHLIST_SYMBOLS = set(INTRADAY_SYMBOLS)

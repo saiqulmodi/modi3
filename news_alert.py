@@ -33,7 +33,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 from fetch_rss import fetch_rss_items
 from fetch_nse_announcements import fetch_nse_announcements
 from fetch_sebi import fetch_sebi_press_releases
-from matcher import find_matches
+from matcher import classify
 from send_telegram import send_telegram_message
 
 STATE_FILE = "news_alerted_state.json"
@@ -78,13 +78,15 @@ def run():
         if item_id in alerted_ids or t_key in alerted_ids:
             continue
 
-        matches = find_matches(item["text"])
+        result = classify(item["text"])
+        matches = result["symbols"] + result["macro_terms"] + result["positive_terms"] + result["red_flag_terms"]
         if matches:
             alerted_ids[item_id] = True
             alerted_ids[t_key] = True
             match_str = ", ".join(sorted(set(matches)))
+            tag = "\U0001F534 RED FLAG" if result["red_flag_terms"] else "\U0001F4F0"
             new_alerts.append(
-                f"[MODI3] \U0001F4F0 <b>{item['source']}</b>\n{item['title']}\n"
+                f"[MODI3] {tag} <b>{item['source']}</b>\n{item['title']}\n"
                 f"Matched: {match_str}\n{item['link']}"
             )
         else:
